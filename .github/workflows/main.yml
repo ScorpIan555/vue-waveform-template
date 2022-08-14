@@ -1,0 +1,27 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+
+      - run: npm clean-install-test
+      - run: npm run build
+        env:
+          PUBLIC_PATH: /vue-waveform-template/
+
+      - uses: crazy-max/ghaction-github-pages@v2.5.0
+        if: ${{ success() && github.ref == 'refs/heads/main' }}
+        with:
+          build_dir: dist
+          jekyll: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
